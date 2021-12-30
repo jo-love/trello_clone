@@ -60,7 +60,7 @@ table {
 body {
   font-weight: 300;
   font-family: 'Source Sans Pro', sans-serif;
-  background-color:${(props) => props.theme.bgColor};
+  background-image: url("/orora.jpg");
   line-height: 1.2;
 }
 a {
