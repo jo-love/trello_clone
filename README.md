@@ -7,4 +7,4 @@
 
 - [x] localStorage에 데이터 저장
 
-- [ ] board 옮기기
+- [x] board 옮기기
