@@ -5,7 +5,7 @@ export interface ICard {
   text: string;
 }
 
-interface IBoardState {
+export interface IBoardState {
   [key: string]: ICard[];
 }
 const loadItem = () => {

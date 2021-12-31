@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Droppable } from 'react-beautiful-dnd';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import { ICard, boardState } from '../atoms';
 import DraggableCard from './DraggableCard';
 import { Button } from './AddAList';
 import { close } from '../img';
+import React from 'react';
 
 const Wrapper = styled.section`
   display: flex;
@@ -86,11 +87,12 @@ interface IAreaProps {
   draggingFromThisWith: boolean;
 }
 interface IBoardProps {
-  todos: ICard[];
+  cards: ICard[];
   boardId: string;
+  index: number;
 }
 
-const Board = ({ todos, boardId }: IBoardProps) => {
+const Board = ({ cards, boardId, index }: IBoardProps) => {
   const [isClicked, setIsClicked] = useState(false);
   const { register, setValue, handleSubmit } = useForm<IForm>();
   const setToDos = useSetRecoilState(boardState);
@@ -113,52 +115,60 @@ const Board = ({ todos, boardId }: IBoardProps) => {
   };
   return (
     <div>
-      <Wrapper>
-        <h2>{boardId}</h2>
-        <Droppable droppableId={boardId}>
-          {(provided, snapshot) => (
-            <Area
-              isDraggingOver={snapshot.isDraggingOver}
-              draggingFromThisWith={Boolean(snapshot.draggingFromThisWith)}
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              {todos.map((todo, index) => (
-                // beautifiul-dnd에서는 key = draggableId(보통 인덱스를 key로 두지만)
-                <DraggableCard
-                  key={todo.id}
-                  todoId={todo.id}
-                  todoText={todo.text}
-                  index={index}
+      <Draggable draggableId={boardId} index={index}>
+        {(provided) => (
+          <Wrapper
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+          >
+            <h2>{boardId}</h2>
+            <Droppable droppableId={boardId} type="card">
+              {(provided, snapshot) => (
+                <Area
+                  isDraggingOver={snapshot.isDraggingOver}
+                  draggingFromThisWith={Boolean(snapshot.draggingFromThisWith)}
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  {cards.map((card, index) => (
+                    // beautifiul-dnd에서는 key = draggableId(보통 인덱스를 key로 두지만)
+                    <DraggableCard
+                      key={card.id}
+                      cardId={card.id}
+                      cardText={card.text}
+                      index={index}
+                    />
+                  ))}
+                  {/* 보드가 밖에 나가도 원사이즈 일정하게 유지 */}
+                  {provided.placeholder}
+                </Area>
+              )}
+            </Droppable>
+            {isClicked ? (
+              <Form onSubmit={handleSubmit(onValid)}>
+                <textarea
+                  onKeyPress={handleKeyPress}
+                  {...register('toDo', { required: true })}
+                  placeholder={`Add task on ${boardId}...`}
                 />
-              ))}
-              {/* 보드가 밖에 나가도 원사이즈 일정하게 유지 */}
-              {provided.placeholder}
-            </Area>
-          )}
-        </Droppable>
-        {isClicked ? (
-          <Form onSubmit={handleSubmit(onValid)}>
-            <textarea
-              onKeyPress={handleKeyPress}
-              {...register('toDo', { required: true })}
-              placeholder={`Add task on ${boardId}...`}
-            />
-            <ItemContainer>
-              <Button type="submit">Add card</Button>
-              <img
-                alt="close"
-                src={close}
-                onClick={() => setIsClicked(false)}
-              />
-            </ItemContainer>
-          </Form>
-        ) : (
-          <AddBtn onClick={handleClick}>+ Add a card</AddBtn>
+                <ItemContainer>
+                  <Button type="submit">Add card</Button>
+                  <img
+                    alt="close"
+                    src={close}
+                    onClick={() => setIsClicked(false)}
+                  />
+                </ItemContainer>
+              </Form>
+            ) : (
+              <AddBtn onClick={handleClick}>+ Add a card</AddBtn>
+            )}
+          </Wrapper>
         )}
-      </Wrapper>
+      </Draggable>
     </div>
   );
 };
 
-export default Board;
+export default React.memo(Board);

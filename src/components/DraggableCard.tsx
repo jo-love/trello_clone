@@ -18,14 +18,14 @@ const Card = styled.div<{ isDragging: boolean }>`
 `;
 
 interface IDraggableCardProps {
-  todoId: number;
-  todoText: string;
+  cardId: number;
+  cardText: string;
   index: number;
 }
-const DragabbleCard = ({ todoId, todoText, index }: IDraggableCardProps) => {
+const DragabbleCard = ({ cardId, cardText, index }: IDraggableCardProps) => {
   return (
     // beautifiul dnd에서는 key = draggableId(보통은 key를 인덱스로 두지만)
-    <Draggable key={todoId} draggableId={todoId + ''} index={index}>
+    <Draggable key={cardId} draggableId={cardId + ''} index={index}>
       {(provided, snapshot) => (
         <Card
           isDragging={snapshot.isDragging}
@@ -33,7 +33,7 @@ const DragabbleCard = ({ todoId, todoText, index }: IDraggableCardProps) => {
           {...provided.dragHandleProps}
           {...provided.draggableProps}
         >
-          {todoText}
+          {cardText}
         </Card>
       )}
     </Draggable>
