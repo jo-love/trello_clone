@@ -27,7 +27,6 @@ function App() {
   // drag 끝나면 실행되는 함수
   const onDragEnd = (result: DropResult) => {
     const { destination, source, type } = result;
-    console.log(result, 'result');
     if (!destination) return;
     if (destination.droppableId === 'trashBoard') {
       setBoards((prev) => {
